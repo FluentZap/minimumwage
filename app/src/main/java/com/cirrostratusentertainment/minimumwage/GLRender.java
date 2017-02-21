@@ -14,6 +14,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
+
 /**
  * Created by Toad on 12/28/2016.
  */
@@ -65,14 +66,14 @@ public class GLRender implements GLSurfaceView.Renderer {
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         GLES11.glClearColor(0.2f, 0.6f, 0.6f, 1.0f);
         square = new GLHelper.Square();
-        tex0 = GLHelper.loadTexture(context, R.drawable.box);
+        tex0 = GLHelper.loadTexture(context, R.drawable.burger);
 
 
         GLES11.glEnable(GLES11.GL_TEXTURE_2D);
         GLES11.glDisable(GLES11.GL_DITHER);
         GLES11.glDisable(GLES11.GL_LIGHTING);
         GLES11.glBlendFunc(GLES11.GL_SRC_ALPHA, GLES11.GL_ONE_MINUS_SRC_ALPHA);
-
+        GLES11.glEnable(GLES11.GL_BLEND);
 
         GLES11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
         GLES11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
@@ -112,8 +113,8 @@ public class GLRender implements GLSurfaceView.Renderer {
         GLES11.glVertexPointer(3, GL11.GL_FLOAT, 0, square.vertexBuffer);
         GLES11.glTexCoordPointer(2, GLES11.GL_FLOAT, 0, square.texBuffer);
 
-
-        draw_battle_map();
+        if (G.orders != null)
+            draw_burgers();
         fpscounter.logFrame();
 
 
@@ -143,35 +144,35 @@ public class GLRender implements GLSurfaceView.Renderer {
         */
     }
 
-    private void draw_battle_map() {
+    private void draw_burgers() {
+
+        float size = G.Scale * 64;
 
         GLES11.glBindTexture(GLES11.GL_TEXTURE_2D, tex0);
 
 
         GLES11.glPushMatrix();
-        GLES11.glTranslatef(0, 300, 0);
-        GLES11.glScalef(64.0f * 1, 64.0f * 1, 0);
+        GLES11.glTranslatef(0, 64, 0);
 
-        //GLES11.glDrawElements(GLES11.GL_TRIANGLES, 6, GLES11.GL_UNSIGNED_SHORT, square.drawListBuffer);
+        //Point s = G.screen_Scroll;
+
+        for (GameEngine.order o : G.orders) {
+
+            GLES11.glPushMatrix();
+
+
+            GLES11.glTranslatef((float)o.theta * ((screen_size.x + size * 2)  / G.burger_time) - size, 0, 0);
+
+            //GLES11.glTranslatef(0, 0, 0);
+
+
+            GLES11.glScalef(size, size, 0);
+            GLES11.glDrawElements(GLES11.GL_TRIANGLES, 6, GLES11.GL_UNSIGNED_SHORT, square.drawListBuffer);
+            GLES11.glPopMatrix();
+
+        }
 
         GLES11.glPopMatrix();
-        float size = G.Scale * 64;
-        Point s = G.screen_Scroll;
-        /*for (int x = 0; x < G.current_Map.size.x; x++) {
-            for (int y = 0; y < G.current_Map.size.y; y++) {
-
-                GLES11.glPushMatrix();
-                GLES11.glTranslatef(0, screen_size.y - size, 0);
-
-                GLES11.glTranslatef(s.x + x * size, s.y + y * -size, 0);
-
-                GLES11.glScalef(size, size, 0);
-                GLES11.glDrawElements(GLES11.GL_TRIANGLES, 6, GLES11.GL_UNSIGNED_SHORT, square.drawListBuffer);
-                GLES11.glPopMatrix();
-
-            }
-        }
-*/
 
     }
 
